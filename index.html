@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniDoc AI — Intelligent Document Synthesis & Analysis Hub</title>
+    <meta name="description"
+        content="Synthesize, analyze, and search across large volumes of documents instantly without manual checking. Client-side AI document intelligence engine.">
+
+    <!-- Modern Typography from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- External Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- PDF.js for parsing PDF documents client-side -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+
+<body>
+
+    <div class="app-container">
+        <!-- Top Navigation Header -->
+        <header class="top-nav">
+            <div class="brand-section">
+                <div class="logo-badge" id="logoBadge">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                    </svg>
+                </div>
+                <div class="brand-titles">
+                    <h1>
+                        OmniDoc AI <span class="version-tag">Synthesizer v2.5</span>
+                    </h1>
+                    <p>Instant multi-document synthesis & intelligence extraction — zero manual reading required</p>
+                </div>
+            </div>
+
+            <div class="nav-actions">
+                <button class="btn btn-demo" id="btnLoadDemo"
+                    title="Load pre-configured enterprise bundle with 5 multi-domain documents">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    Load Demo Enterprise Docs
+                </button>
+                <button class="btn btn-secondary" id="btnPasteText">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    Paste Raw Text
+                </button>
+                <button class="btn btn-primary" id="btnExportReport">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Export Synthesis Brief
+                </button>
+            </div>
+        </header>
+
+        <!-- Key Performance Metrics Ribbon -->
+        <section class="metrics-ribbon" id="metricsRibbon">
+            <div class="metric-card">
+                <div class="metric-icon-wrap" style="color: var(--accent-primary);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                </div>
+                <div class="metric-data">
+                    <span class="metric-value" id="statDocCount">0</span>
+                    <span class="metric-label">Documents Active</span>
+                </div>
+            </div>
+
+            <div class="metric-card cyan">
+                <div class="metric-icon-wrap" style="color: var(--accent-cyan);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </div>
+                <div class="metric-data">
+                    <span class="metric-value" id="statTimeSaved">0m</span>
+                    <span class="metric-label">Reading Time Saved</span>
+                </div>
+            </div>
+
+            <div class="metric-card emerald">
+                <div class="metric-icon-wrap" style="color: var(--accent-emerald);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                </div>
+                <div class="metric-data">
+                    <span class="metric-value" id="statWordsAnalyzed">0</span>
+                    <span class="metric-label">Words Processed</span>
+                </div>
+            </div>
+
+            <div class="metric-card amber">
+                <div class="metric-icon-wrap" style="color: var(--accent-amber);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path
+                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                        </path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </div>
+                <div class="metric-data">
+                    <span class="metric-value" id="statRisksFound">0</span>
+                    <span class="metric-label">Risk Flags Found</span>
+                </div>
+            </div>
+
+            <div class="metric-card rose">
+                <div class="metric-icon-wrap" style="color: var(--accent-rose);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <polygon
+                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                        </polygon>
+                    </svg>
+                </div>
+                <div class="metric-data">
+                    <span class="metric-value" id="statEntitiesCount">0</span>
+                    <span class="metric-label">Entities Extracted</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Workspace -->
+        <main class="workspace-layout">
+            <!-- Left Column: Document Ingestion & File Index -->
+            <aside class="sidebar-panel">
+                <div class="sidebar-header">
+                    <h2>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z">
+                            </path>
+                        </svg>
+                        Knowledge Base
+                    </h2>
+                    <span class="doc-count-badge" id="sidebarDocBadge">0 Files</span>
+                </div>
+
+                <!-- Ingestion Dropzone -->
+                <div class="dropzone-container" id="dropzoneContainer">
+                    <input type="file" id="fileUploadInput" multiple accept=".txt,.md,.json,.csv,.pdf">
+                    <div class="dropzone-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                    </div>
+                    <div class="dropzone-title">Drop Documents Here</div>
+                    <div class="dropzone-sub">Supports PDF, TXT, Markdown, CSV, JSON</div>
+                </div>
+
+                <div class="quick-actions-bar">
+                    <button class="btn btn-secondary btn-sm" id="btnQuickDemo">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                        Insert Demo
+                    </button>
+                    <button class="btn btn-danger btn-sm" id="btnClearDocs">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                            </path>
+                        </svg>
+                        Clear All
+                    </button>
+                </div>
+
+                <!-- Filter input -->
+                <div class="sidebar-filter-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="docFilterInput" placeholder="Filter indexed files...">
+                </div>
+
+                <!-- Document List -->
+                <div class="doc-list-scroll" id="docListContainer">
+                    <!-- Dynamically populated -->
+                </div>
+            </aside>
+
+            <!-- Right Column: Synthesis & Intelligence Stage -->
+            <section class="main-stage">
+                <!-- Navigation Tabs -->
+                <nav class="stage-tabs" id="stageTabs">
+                    <button class="tab-btn active" data-tab="synthesis">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                            </path>
+                        </svg>
+                        Executive Synthesis
+                    </button>
+                    <button class="tab-btn" data-tab="docsummary">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        AI Document Summaries
+                    </button>
+                    <button class="tab-btn" data-tab="qa">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        Smart Q&A Query
+                    </button>
+                    <button class="tab-btn" data-tab="search">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        Global Deep Search
+                    </button>
+                    <button class="tab-btn" data-tab="analytics">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                            <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+                        </svg>
+                        Visual Analytics & Entities
+                    </button>
+                    <button class="tab-btn" data-tab="compare">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="16 3 21 3 21 8"></polyline>
+                            <line x1="4" y1="20" x2="21" y2="3"></line>
+                            <polyline points="21 16 21 21 16 21"></polyline>
+                            <line x1="15" y1="15" x2="21" y2="21"></line>
+                            <line x1="4" y1="4" x2="9" y2="9"></line>
+                        </svg>
+                        Cross-Doc Comparator
+                    </button>
+                </nav>
+
+                <!-- TAB 1: EXECUTIVE SYNTHESIS -->
+                <div class="tab-pane active" id="pane-synthesis">
+                    <div class="synthesis-header-banner">
+                        <div>
+                            <h2>
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polygon
+                                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                                    </polygon>
+                                </svg>
+                                Consolidated Cross-Document Intelligence
+                            </h2>
+                            <p id="synthesisOverviewText">AI has extracted key takeaways, critical operational risks,
+                                financial figures, and action items across all uploaded materials without manual
+                                intervention.</p>
+                        </div>
+                        <div class="reading-reduction-badge">
+                            <div class="reduction-rate" id="efficiencyBadge">94%</div>
+                            <div class="reduction-sub">Reading Time Saved</div>
+                        </div>
+                    </div>
+
+                    <div class="synthesis-grid">
+                        <!-- Left: High Priority Takeaways & Action Radar -->
+                        <div class="content-box">
+                            <div class="content-box-title">
+                                <div class="box-title-left">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                                    </svg>
+                                    <span>Key Insights & Cross-Document Takeaways</span>
+                                </div>
+                                <span class="doc-tag" id="insightsCountBadge">6 Insights</span>
+                            </div>
+                            <div class="bullet-points-list" id="synthesisInsightsList">
+                                <!-- Dynamically rendered -->
+                            </div>
+                        </div>
+
+                        <!-- Right: Critical Risks & Key Financials -->
+                        <div style="display: flex; flex-direction: column; gap: 20px;">
+                            <!-- Risk Flags -->
+                            <div class="content-box">
+                                <div class="content-box-title">
+                                    <div class="box-title-left">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-rose)"
+                                            stroke-width="2">
+                                            <path
+                                                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                                            </path>
+                                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                        </svg>
+                                        <span>Critical Alerts & Liabilities</span>
+                                    </div>
+                                    <span class="doc-tag risk-high" id="riskCountBadge">0 Detected</span>
+                                </div>
+                                <div class="alerts-stack" id="synthesisAlertsList">
+                                    <!-- Dynamically rendered -->
+                                </div>
+                            </div>
+
+                            <!-- Key Figures Extracted -->
+                            <div class="content-box">
+                                <div class="content-box-title">
+                                    <div class="box-title-left">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)"
+                                            stroke-width="2">
+                                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                        </svg>
+                                        <span>Extracted Financial & Numerical Metrics</span>
+                                    </div>
+                                </div>
+                                <div class="key-metrics-grid" id="synthesisMetricsGrid">
+                                    <!-- Dynamically rendered -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: AI DOCUMENT SUMMARIES -->
+                <div class="tab-pane" id="pane-docsummary">
+                    <div class="doc-summary-card">
+                        <div class="doc-summary-header">
+                            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                                <label style="font-size:0.84rem; font-weight:700; color:var(--text-muted);">Active
+                                    Document:</label>
+                                <select class="filter-select" id="summaryDocSelect" style="min-width:280px;"></select>
+                                <span class="doc-tag" id="summaryCategoryBadge">General</span>
+                                <span class="doc-tag risk-low" id="summaryRiskBadge">Healthy / Low Risk</span>
+                            </div>
+
+                            <!-- Summary Mode Selector -->
+                            <div class="summary-mode-selector" id="summaryModeSelector">
+                                <button class="summary-mode-btn active" data-mode="tldr">⚡ Executive TL;DR</button>
+                                <button class="summary-mode-btn" data-mode="takeaways">📌 Key Takeaways</button>
+                                <button class="summary-mode-btn" data-mode="actions">🎯 Actions & Risks</button>
+                                <button class="summary-mode-btn" data-mode="full">🔍 Comprehensive</button>
+                            </div>
+                        </div>
+
+                        <!-- AI TL;DR Banner Box -->
+                        <div class="summary-tldr-box">
+                            <div class="summary-tldr-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                                </svg>
+                                <span>Automated AI Executive Brief</span>
+                            </div>
+                            <div class="summary-tldr-content" id="singleDocTldrText">
+                                Select or upload a document to view its AI summary.
+                            </div>
+                        </div>
+
+                        <!-- Toolbar Actions: Copy, Download, Speech, Side-by-Side -->
+                        <div class="summary-actions-toolbar">
+                            <button class="btn btn-secondary btn-sm" id="btnCopySummary">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="14" height="14">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                                Copy Summary
+                            </button>
+                            <button class="btn btn-secondary btn-sm" id="btnDownloadSummary">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="14" height="14">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                Export Summary
+                            </button>
+                            <button class="btn btn-secondary btn-sm" id="btnSpeakSummary">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="14" height="14">
+                                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                                </svg>
+                                Read Aloud (Voice)
+                            </button>
+                            <button class="btn btn-secondary btn-sm" id="btnToggleSideBySide">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="14" height="14">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="12" y1="3" x2="12" y2="21"></line>
+                                </svg>
+                                Toggle Source Text
+                            </button>
+                        </div>
+
+                        <!-- Content Area: Split View (Summary Points + Original Raw Content) -->
+                        <div class="doc-split-view">
+                            <div style="display:flex; flex-direction:column; gap:16px;">
+                                <div class="content-box">
+                                    <div class="content-box-title">
+                                        <div class="box-title-left">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="9 18 15 12 9 6"></polyline>
+                                            </svg>
+                                            <span>Key Takeaways & Findings</span>
+                                        </div>
+                                    </div>
+                                    <div class="bullet-points-list" id="singleDocTakeawaysList"></div>
+                                </div>
+
+                                <div class="content-box">
+                                    <div class="content-box-title">
+                                        <div class="box-title-left">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-rose)"
+                                                stroke-width="2">
+                                                <path
+                                                    d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                                                </path>
+                                            </svg>
+                                            <span>Specific Risk Flags & Obligations</span>
+                                        </div>
+                                    </div>
+                                    <div class="alerts-stack" id="singleDocAlertsList"></div>
+                                </div>
+                            </div>
+
+                            <!-- Original Source Text Card -->
+                            <div style="display:flex; flex-direction:column; gap:10px;" id="sourceTextContainer">
+                                <div
+                                    style="font-size:0.82rem; font-weight:700; color:var(--text-muted); display:flex; justify-content:space-between;">
+                                    <span>Original Document Source Text</span>
+                                    <span id="singleDocWordCount" style="color:var(--text-dim);">0 words</span>
+                                </div>
+                                <div class="raw-text-viewer-card" id="singleDocRawText"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: SMART Q&A QUERY -->
+                <div class="tab-pane" id="pane-qa">
+                    <div class="qa-search-box">
+                        <div class="input-button-group">
+                            <div class="qa-input-wrapper">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                                <input type="text" id="qaInputQuery"
+                                    placeholder="Ask anything across all documents (e.g., 'What are the main risks and deadlines?')">
+                            </div>
+                            <button class="btn btn-primary" id="btnSubmitQA">
+                                Ask AI Synthesizer
+                            </button>
+                        </div>
+
+                        <!-- Quick Query Suggestion Chips -->
+                        <div class="preset-chips-row">
+                            <span class="preset-label">Suggested Questions:</span>
+                            <button class="preset-chip"
+                                data-query="What are the critical financial figures and budgets?">Financial
+                                Figures</button>
+                            <button class="preset-chip"
+                                data-query="What are the contractual deadlines and upcoming dates?">Upcoming
+                                Deadlines</button>
+                            <button class="preset-chip"
+                                data-query="What security vulnerabilities or audit risks were reported?">Security & Risk
+                                Flags</button>
+                            <button class="preset-chip"
+                                data-query="What are the main deliverables and action items?">Deliverables & Next
+                                Steps</button>
+                            <button class="preset-chip"
+                                data-query="Who are the key organizations, clients, and partners?">Key
+                                Stakeholders</button>
+                        </div>
+                    </div>
+
+                    <!-- Answer & Citations Box -->
+                    <div class="qa-response-container" id="qaResponseContainer" style="display: none;">
+                        <div class="qa-response-header">
+                            <h3>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)"
+                                    stroke-width="2">
+                                    <polygon
+                                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                                    </polygon>
+                                </svg>
+                                Synthesized Answer
+                            </h3>
+                            <span class="doc-tag" id="qaConfidenceTag">High Confidence</span>
+                        </div>
+                        <div class="qa-synthesized-answer" id="qaAnswerText">
+                            <!-- Result text -->
+                        </div>
+                        <div class="citations-section">
+                            <h4>Verified Citations & Evidence in Documents:</h4>
+                            <div class="citations-grid" id="qaCitationsGrid">
+                                <!-- Citation cards -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: GLOBAL DEEP SEARCH -->
+                <div class="tab-pane" id="pane-search">
+                    <div class="global-search-header">
+                        <div class="input-button-group">
+                            <div class="qa-input-wrapper">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                                <input type="text" id="globalSearchInput"
+                                    placeholder="Instant regex or keyword search across all indexed files...">
+                            </div>
+                            <button class="btn btn-secondary" id="btnRunSearch">Search All</button>
+                        </div>
+                        <div class="search-filter-controls">
+                            <select class="filter-select" id="searchDocScope">
+                                <option value="all">Scope: All Documents</option>
+                            </select>
+                            <label
+                                style="display:flex; align-items:center; gap:6px; font-size:0.8rem; color:var(--text-muted); cursor:pointer;">
+                                <input type="checkbox" id="searchMatchExact"> Case Sensitive
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Search Results -->
+                    <div class="search-results-list" id="searchResultsContainer">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+
+                <!-- TAB 4: VISUAL ANALYTICS & ENTITIES -->
+                <div class="tab-pane" id="pane-analytics">
+                    <div class="analytics-charts-grid">
+                        <div class="chart-box">
+                            <h3>Document Category & Scope Distribution</h3>
+                            <div class="chart-canvas-wrapper">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-box">
+                            <h3>Sentiment & Risk Profile Across Corpus</h3>
+                            <div class="chart-canvas-wrapper">
+                                <canvas id="sentimentChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="entity-matrix-wrapper">
+                        <div class="content-box-title">
+                            <div class="box-title-left">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path
+                                        d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z">
+                                    </path>
+                                    <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                                </svg>
+                                <span>Automated Entity Extraction Matrix (People, Organizations, Financials,
+                                    Dates)</span>
+                            </div>
+                        </div>
+                        <div class="entity-tags-cloud" id="entityMatrixTags">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 5: CROSS-DOCUMENT COMPARATOR -->
+                <div class="tab-pane" id="pane-compare">
+                    <div class="compare-selectors-bar">
+                        <div style="flex: 1; display:flex; align-items:center; gap:10px;">
+                            <label style="font-size:0.84rem; font-weight:700;">Document A:</label>
+                            <select class="filter-select" id="compareSelectA" style="width: 100%;"></select>
+                        </div>
+                        <div style="flex: 1; display:flex; align-items:center; gap:10px;">
+                            <label style="font-size:0.84rem; font-weight:700;">Document B:</label>
+                            <select class="filter-select" id="compareSelectB" style="width: 100%;"></select>
+                        </div>
+                        <button class="btn btn-primary" id="btnExecuteCompare">Compare Side-by-Side</button>
+                    </div>
+
+                    <div class="compare-side-by-side" id="compareResultsRow">
+                        <div class="compare-column" id="compareColA">
+                            <h3 id="compareTitleA">Select Document A</h3>
+                            <div id="compareBodyA" style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.6;"></div>
+                        </div>
+                        <div class="compare-column" id="compareColB">
+                            <h3 id="compareTitleB">Select Document B</h3>
+                            <div id="compareBodyB" style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.6;"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODAL: Paste Raw Text Document -->
+    <div class="modal-backdrop" id="pasteModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Paste Raw Text or Notes</h3>
+                <button class="modal-close-btn" id="closePasteModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label
+                        style="font-size:0.82rem; font-weight:600; color:var(--text-muted); display:block; margin-bottom:6px;">Document
+                        Title</label>
+                    <input type="text" id="pasteDocTitle" placeholder="e.g., Annual Board Meeting Minutes"
+                        style="width:100%; background:var(--bg-surface); border:1px solid var(--border-subtle); padding:10px; border-radius:var(--radius-sm); color:#fff; outline:none;">
+                </div>
+                <div>
+                    <label
+                        style="font-size:0.82rem; font-weight:600; color:var(--text-muted); display:block; margin-bottom:6px;">Category
+                        Tag</label>
+                    <select id="pasteDocCategory" class="filter-select" style="width:100%;">
+                        <option value="General">General Business</option>
+                        <option value="Legal">Legal & Contracts</option>
+                        <option value="Finance">Financials & Budgets</option>
+                        <option value="Technical">Technical & Engineering</option>
+                        <option value="Security">Security & Compliance</option>
+                        <option value="Operations">Operations & HR</option>
+                    </select>
+                </div>
+                <div>
+                    <label
+                        style="font-size:0.82rem; font-weight:600; color:var(--text-muted); display:block; margin-bottom:6px;">Document
+                        Content</label>
+                    <textarea class="code-input-area" id="pasteDocContent"
+                        placeholder="Paste full raw text, notes, email chains, or logs here..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelPasteModal">Cancel</button>
+                <button class="btn btn-primary" id="savePasteDoc">Add & Synthesize</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Full Document Viewer Drawer -->
+    <div class="modal-backdrop" id="viewDocModal">
+        <div class="modal-box" style="max-width: 900px;">
+            <div class="modal-header">
+                <h3 id="viewModalTitle">Document View</h3>
+                <button class="modal-close-btn" id="closeViewModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div
+                    style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-subtle); padding-bottom:10px;">
+                    <span class="doc-tag" id="viewModalMeta">Meta</span>
+                    <span class="doc-tag" id="viewModalStats">Stats</span>
+                </div>
+                <div id="viewModalContent"
+                    style="white-space: pre-wrap; font-size: 0.88rem; line-height: 1.6; color: #cbd5e1; max-height: 500px; overflow-y: auto; background: var(--bg-surface); padding: 16px; border-radius: var(--radius-sm);">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="doneViewModal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Live AI Ingestion Notification -->
+    <div class="ai-notification-banner" id="aiToastBanner">
+        <div class="pulse-spinner"></div>
+        <div>
+            <div style="font-size: 0.84rem; font-weight: 700; color: #ffffff;" id="toastTitle">AI Reading Document...
+            </div>
+            <div style="font-size: 0.74rem; color: #94a3b8;" id="toastSubtitle">Extracting key points & synthesizing
+                summary</div>
+        </div>
+    </div>
+
+    <!-- External JavaScript Logic -->
+    <script src="script.js"></script>
+</body>
+
+</html>
